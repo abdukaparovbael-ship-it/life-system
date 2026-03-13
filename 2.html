@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+<meta charset="UTF-8">
+<title>Life System</title>
+
+<style>
+
+body{
+font-family:Segoe UI;
+margin:0;
+background:linear-gradient(135deg,#1e293b,#0f172a);
+color:white;
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 20px;
+background:#020617;
+}
+
+#clock{
+font-size:20px;
+font-weight:bold;
+}
+
+select{
+padding:5px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:12px;
+margin-bottom:20px;
+box-shadow:0 5px 15px rgba(0,0,0,0.4);
+}
+
+h2{
+margin-top:0;
+}
+
+.task{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin:8px 0;
+}
+
+.task input[type=number]{
+width:60px;
+}
+
+button{
+background:#22c55e;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#16a34a;
+}
+
+.dayNav{
+display:flex;
+justify-content:space-between;
+margin-bottom:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div id="clock"></div>
+
+<select id="lang" onchange="changeLang()">
+<option value="ky">Кыргызча</option>
+<option value="ru">Русский</option>
+<option value="en">English</option>
+</select>
+
+</header>
+
+
+<div class="container">
+
+<div class="dayNav">
+<button onclick="changeDay(-1)">←</button>
+<div id="date"></div>
+<button onclick="changeDay(1)">→</button>
+</div>
+
+
+<div class="card">
+<h2 id="prayerTitle">Намаз</h2>
+
+<div class="task">
+Багымдат
+<input type="checkbox" onchange="save('fajr')">
+</div>
+
+<div class="task">
+Бешим
+<input type="checkbox" onchange="save('zuhr')">
+</div>
+
+<div class="task">
+Аср
+<input type="checkbox" onchange="save('asr')">
+</div>
+
+<div class="task">
+Шам
+<input type="checkbox" onchange="save('maghrib')">
+</div>
+
+<div class="task">
+Куптан
+<input type="checkbox" onchange="save('isha')">
+</div>
+
+<div class="task">
+Тахажжуд
+<input type="checkbox" onchange="save('tahajjud')">
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Иштер</h2>
+
+<div class="task">
+Китеп окуу
+<input type="number" placeholder="саат" onchange="saveValue('book',this)">
+</div>
+
+<div class="task">
+Англис
+<input type="number" placeholder="саат" onchange="saveValue('english',this)">
+</div>
+
+<div class="task">
+IT үйрөнүү
+<input type="number" placeholder="саат" onchange="saveValue('it',this)">
+</div>
+
+<div class="task">
+Спорт
+<input type="number" placeholder="саат" onchange="saveValue('sport',this)">
+</div>
+
+<div class="task">
+Телефон
+<input type="number" placeholder="саат" onchange="saveValue('phone',this)">
+</div>
+
+<div class="task">
+Уйку
+<input type="number" placeholder="саат" onchange="saveValue('sleep',this)">
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let currentDate=new Date()
+
+function updateDate(){
+
+document.getElementById("date").innerText=
+currentDate.toDateString()
+
+load()
+
+}
+
+function changeDay(n){
+
+currentDate.setDate(currentDate.getDate()+n)
+
+updateDate()
+
+}
+
+function key(name){
+
+return name+"_"+currentDate.toISOString().slice(0,10)
+
+}
+
+function save(name){
+
+let value=event.target.checked
+
+localStorage.setItem(key(name),value)
+
+}
+
+function saveValue(name,input){
+
+localStorage.setItem(key(name),input.value)
+
+}
+
+function load(){
+
+document.querySelectorAll("input[type=checkbox]").forEach(el=>{
+let name=el.getAttribute("onchange").match(/'(.*?)'/)[1]
+el.checked=localStorage.getItem(key(name))==="true"
+})
+
+document.querySelectorAll("input[type=number]").forEach(el=>{
+let name=el.getAttribute("onchange").match(/'(.*?)'/)[1]
+el.value=localStorage.getItem(key(name))||""
+})
+
+}
+
+function clock(){
+
+let now=new Date()
+
+let time=now.toLocaleTimeString("ru-RU",{
+timeZone:"Asia/Bishkek"
+})
+
+document.getElementById("clock").innerText="KGZ "+time
+
+}
+
+setInterval(clock,1000)
+
+clock()
+
+updateDate()
+
+
+const texts={
+ky:{prayer:"Намаз"},
+ru:{prayer:"Намаз"},
+en:{prayer:"Prayer"}
+}
+
+function changeLang(){
+
+let l=document.getElementById("lang").value
+
+document.getElementById("prayerTitle").innerText=
+texts[l].prayer
+
+}
+
+</script>
+
+</body>
+</html>
